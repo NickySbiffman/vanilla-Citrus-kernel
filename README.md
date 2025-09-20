@@ -13,21 +13,33 @@
     к примеру:
     ```sh
     brew install x86_64-elf-gcc
+    ```
+    ```sh
     sudo apt install x86_64-elf-gcc
+    ```
+    ```sh
     sudo dnf install x86_64-elf-gcc
     ```
     или используйте метод сборки из исходников
 
-5. Установка эмулятора qemu
-	```sh
-	sudo pacman -S qemu-full
-	sudo apt install qemu-full
-	sudo dnf insatll qemu-full
-	```
-6. Установка xorriso
+6. Установка эмулятора qemu
+7. ```sh
+    brew install qemu
+    ```
+    ```sh
+    sudo apt install qemu
+    ```
+    ```sh
+    sudo dnf qemu
+    ```
+8. Установка xorriso
 	```sh
 	sudo pacman -S xorriso
+ 	```
+ 	```sh
 	sudo apt install xorriso
+ 	```
+ 	```sh
 	sudo dnf insatll xorriso
 	```
 	
