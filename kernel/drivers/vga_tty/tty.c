@@ -3,7 +3,7 @@
 #define ROWS 	   25
 #define DEFAULT_CA 0x07
 
-#include "tty.h"
+#include <citrus/tty.h>
 
 ui8 curr_atr = DEFAULT_CA;
 

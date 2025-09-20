@@ -4,7 +4,7 @@
  *   @Programming language: "C"
 */
 
-#include "tty.h"
+#include <citrus/tty.h>
 void kernel_main(void) 
 {	
 	putsk("\nhello from Citrus 64 bit unix-like operating system\nBSD 3-Clause license\nCopyright (c) Nicky Sbiffman\n\n");
