@@ -1,2 +1,54 @@
-# vanilla-Citrus-kernel
-64 bit Citrus unix-like kernel written in C, NASM, GAS
+# Citrus
+
+64 битное Unix подобное ядро написанное с нуля на языках С, GAS, NASM.
+--------------------------------------------------------------------
+
+## Инсталяция ядра
+*Примечание: установка на системах не имеющих отношения к unix может оказаться затруднительным процессом и наврядли плодоносным* 
+
+1. Скачайте исходный код с этого репозитория
+2. Создайте отдельную директорию для проекта пример: osproject/citrus-kernel/**citrus** < основной файл ядра
+   
+4. Установка кросс компилятора **x86_64-elf-gcc**
+    к примеру:
+    ```sh
+    brew install x86_64-elf-gcc
+    ```
+    ```sh
+    sudo apt install x86_64-elf-gcc
+    ```
+    ```sh
+    sudo dnf install x86_64-elf-gcc
+    ```
+    или используйте метод сборки из исходников
+
+6. Установка эмулятора qemu
+7. ```sh
+    brew install qemu
+    ```
+    ```sh
+    sudo apt install qemu
+    ```
+    ```sh
+    sudo dnf qemu
+    ```
+8. Установка xorriso
+	```sh
+	sudo pacman -S xorriso
+ 	```
+ 	```sh
+	sudo apt install xorriso
+ 	```
+ 	```sh
+	sudo dnf insatll xorriso
+	```
+	
+### Запуск ядра
+
+для запуска ядра воспользуйтесь следующей командой
+
+```sh
+make clean && make && make run
+```
+
+ Если все прошло успешно вы увидите окно qemu в котором будет виден grub а далее текстовый интерфейс ядра
