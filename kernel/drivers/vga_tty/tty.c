@@ -4,18 +4,13 @@
 #define DEFAULT_CA 0x07
 
 #include <citrus/tty.h>
+#include <citrus/io.h>
 
 ui8 curr_atr = DEFAULT_CA;
 
 //start cursor position, x = 0, y =0
 static ui32 c_col = 0;
 static ui32 c_row = 0;
-
-void outb(ui16 port, ui8 val)
-{
-	__asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
-}
-
 
 void move_cursor(int row, int col) 
 {

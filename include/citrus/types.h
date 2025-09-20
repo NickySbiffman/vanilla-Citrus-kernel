@@ -1,8 +1,9 @@
-/*файл: types.h
- *  --разработчик: Deuce;
- *  --Лицензия: BSD 3-Clause;
- *  --путь: include/
- */
+/*folder - types.c (types file)
+ *   @developer: Nicky Sbiffman
+ * 	 @license: BSD 3-Clause
+ *   @Programming language: "C"
+*/
+
  
 #include <stdint.h>
 
