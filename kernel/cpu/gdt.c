@@ -1,5 +1,5 @@
-#include <citrus/gdt.h>
-#include <citrus/tty.h>
+#include <citrus/cpu/gdt.h>
+#include <citrus/tty/tty.h>
 #include <citrus/log.h>
 
 ui64 gdt_addr;
@@ -9,14 +9,14 @@ tss_t the_tss;
 
 void gdt_ent(ui8 num, ui32 base, ui16 limit, ui8 access, ui8 flags)
 {
-	gdt.gdt_ent[num].limit = (limit & 0xFFFF);
+	gdt.gdt_ent[num].limit 		 = (limit & 0xFFFF);
 	
-	gdt.gdt_ent[num].base_low = (base & 0xFFFF);
-	gdt.gdt_ent[num].base_mid = (base << 16) & 0xFF;
-	gdt.gdt_ent[num].base_high = (base << 24) & 0xFF;
+	gdt.gdt_ent[num].base_low 	 = (base & 0xFFFF);
+	gdt.gdt_ent[num].base_mid 	 = (base << 16) & 0xFF;
+	gdt.gdt_ent[num].base_high 	 = (base << 24) & 0xFF;
 	
 	gdt.gdt_ent[num].access_byte = access;
-	gdt.gdt_ent[num].flags = (((limit >> 16) & 0xF) | (flags & 0xF0));
+	gdt.gdt_ent[num].flags 		 = (((limit >> 16) & 0xF) | (flags & 0xF0));
 }
 
 void gdt_load(GDTR le_gdt_pointer)
@@ -67,14 +67,14 @@ void gdt_init()
     gdt_ent(12, 0, (ui16) 0xFFFFF,      0xF2, 0xC0);    // User   64bit Data Segment    0x60
 
 	 // TSS 0x28
-    gdt.tss.length = 104;
-    gdt.tss.base_low = (ui16) (((ui64) &the_tss) & 0xffff);
-    gdt.tss.base_mid = (ui8) (((ui64) &the_tss >> 16) & 0xff);
-    gdt.tss.flags1 = 0b10001001;
-    gdt.tss.flags2 = 0;
-    gdt.tss.base_high = (ui8) (((ui64) &the_tss >> 24) & 0xff);
-    gdt.tss.base_upper = (ui32) (((ui64) &the_tss >> 32) & 0xffffffff);
-    gdt.tss.reserved = 0;
+    gdt.tss.length 		= 104;
+    gdt.tss.base_low 	= (ui16) (((ui64) &the_tss) & 0xffff);
+    gdt.tss.base_mid 	= (ui8) (((ui64) &the_tss >> 16) & 0xff);
+    gdt.tss.flags1 		= 0b10001001;
+    gdt.tss.flags2 		= 0;
+    gdt.tss.base_high 	= (ui8) (((ui64) &the_tss >> 24) & 0xff);
+    gdt.tss.base_upper 	= (ui32) (((ui64) &the_tss >> 32) & 0xffffffff);
+    gdt.tss.reserved 	= 0;
     
     gdt_load(gdt_ptr);
     //putsk("Loaded GDT at %X\n\n", gdt_addr);

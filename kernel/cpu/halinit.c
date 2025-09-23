@@ -1,5 +1,5 @@
-#include <citrus/halinit.h>
-#include <citrus/gdt.h>
+#include <citrus/cpu/halinit.h>
+#include <citrus/cpu/gdt.h>
 
 void hal_init() 
 {

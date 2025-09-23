@@ -1,4 +1,4 @@
-#include <citrus/tty.h>
+#include <citrus/tty/tty.h>
 #include <citrus/log.h>
 
 void log(const char *str)
