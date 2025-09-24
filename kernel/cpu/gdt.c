@@ -41,7 +41,7 @@ void gdt_load(GDTR le_gdt_pointer)
 
 void gdt_init()
 {
-	putsk("initializing GDT...\n");
+	putsk("[GDT] initializing GDT...\n");
 	
 	gdt_ptr.limit = sizeof(gdt) - 1;
 	gdt_ptr.base = (ui64) &gdt;
