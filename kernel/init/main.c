@@ -8,9 +8,6 @@
 #include <citrus/cpu/halinit.h>
 #include <citrus/log.h>
 
-#define DISK_SIZE (1024 * 1024) // 1MB
-static ui8 virtual_disk[DISK_SIZE] __attribute__((aligned(512)));
-
 void kernel_main(void) 
 {
 	hal_init();	

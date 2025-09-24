@@ -1,54 +1,71 @@
-OBJ_DIR := build
-ISO_DIR := iso
-INCLUDE := -I include
+KERN_DIR := kernel
+OBJ_DIR := $(KERN_DIR)/build
+ISO_DIR := $(KERN_DIR)/iso
 
-SRCS := $(shell find . -name '*.c' -o -name '*.S' -o -name '*.asm' | sed 's|^./||')
-OBJS := $(patsubst %.c, $(OBJ_DIR)/%.o, $(filter %.c,$(SRCS))) \
-        $(patsubst %.S, $(OBJ_DIR)/%.o, $(filter %.S,$(SRCS))) \
-        $(patsubst %.asm, $(OBJ_DIR)/%.o, $(filter %.asm,$(SRCS)))
-OBJS := $(filter-out $(OBJ_DIR)/boot/boot.o, $(OBJS))
-
-CC := x86_64-elf-gcc-15.2.0
+CC := x86_64-elf-gcc
 AS := x86_64-elf-as
 NASM := nasm
 LD := x86_64-elf-ld
-CFLAGS := -ffreestanding  -Wall -Wextra -m64 $(INCLUDE) --std=c99 -Werror=implicit-function-declaration
+GRUB_MKRESCUE := grub-mkrescue
+
+# flags
+CFLAGS := -ffreestanding -Wall -Wextra -m64 -I$(KERN_DIR)/include \
+          -std=c99 -fno-stack-protector -mno-red-zone -fno-pie -fno-pic -Werror=implicit-function-declaration
 LDFLAGS := -T linker.ld -nostdlib --allow-multiple-definition -no-pie
 
-all: $(ISO_DIR)/boot/kernel.elf grub
+C_SRCS := $(shell find $(KERN_DIR) -name '*.c')
+ASM_SRCS_NASM := $(shell find $(KERN_DIR) -name '*.asm')
+ASM_SRCS_GAS := $(shell find $(KERN_DIR) -name '*.S')
 
-$(OBJ_DIR)/%.o: %.c
+C_OBJS := $(patsubst $(KERN_DIR)/%.c, $(OBJ_DIR)/%.o, $(C_SRCS))
+ASM_OBJS_NASM := $(patsubst $(KERN_DIR)/%.asm, $(OBJ_DIR)/%.o, $(ASM_SRCS_NASM))
+ASM_OBJS_GAS := $(patsubst $(KERN_DIR)/%.S, $(OBJ_DIR)/%.o, $(ASM_SRCS_GAS))
+
+ALL_OBJS := $(C_OBJS) $(ASM_OBJS_NASM) $(ASM_OBJS_GAS)
+
+# kernel
+KERNEL_ELF := $(ISO_DIR)/boot/kernel.elf
+
+.PHONY: all clean iso run debug
+
+all: $(KERNEL_ELF) iso
+
+# build C -> .c
+$(OBJ_DIR)/%.o: $(KERN_DIR)/%.c
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -fno-stack-protector -mno-red-zone -fno-pie -fno-pic -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "CC		$<"
 
-$(OBJ_DIR)/%.o: %.S
+# build gnu asm -> .o
+$(OBJ_DIR)/%.o: $(KERN_DIR)/%.S
 	@mkdir -p $(dir $@)
-	@$(AS) --64 $< -o $@
+	$(AS) --64 $< -o $@
 	@echo "AS		$<"
 
-$(OBJ_DIR)/%.o: %.asm
+# build NASM -> .o
+$(OBJ_DIR)/%.o: $(KERN_DIR)/%.asm
 	@mkdir -p $(dir $@)
-	@$(NASM) -f elf64 $< -o $@
+	$(NASM) -f elf64 $< -o $@
 	@echo "NASM		$<"
 
-$(ISO_DIR)/boot/kernel.elf: $(OBJ_DIR)/boot/boot.o $(filter-out $(OBJ_DIR)/boot/boot.o,$(OBJS))
+# lonk kernel
+$(KERNEL_ELF): $(ALL_OBJS) linker.ld
 	@mkdir -p $(ISO_DIR)/boot
-	@$(LD) -n $(LDFLAGS) -o $@ $^
-	@echo "LD		$<"
+	$(LD) $(LDFLAGS) -o $@ $(filter %.o,$^)
+	@echo "LD		$@"
 
-grub:
+# create ISO
+iso: $(KERNEL_ELF)
 	@mkdir -p $(ISO_DIR)/boot/grub
 	@cp grub.cfg $(ISO_DIR)/boot/grub/grub.cfg
-	@grub-mkrescue -o kernel.iso $(ISO_DIR)
+	@$(GRUB_MKRESCUE) -o kernel.iso $(ISO_DIR)
+	@echo "ISO		kernel.iso"
 
 clean:
-	@rm -rf $(OBJ_DIR) $(ISO_DIR)/boot/kernel.elf kernel.iso
+	@rm -rf $(OBJ_DIR) $(ISO_DIR) kernel.iso
 
-run:
+run: all
 	@qemu-system-x86_64 -cdrom kernel.iso -m 2048M -hda ../hda.img -boot d
 
-debug:
+debug: all
 	@qemu-system-x86_64 -cdrom kernel.iso -m 2048M -d int
-
-.PHONY: all clean grub run 
